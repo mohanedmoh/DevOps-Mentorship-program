@@ -11,5 +11,10 @@
 6. Docker
 7. K8s
 
+# Files 
+## Terraform/AWS
+* Task1 : Create EC2 instance using Terraform is located in aws.tf 
+* Task2 : Create VPC infrastracture, find the image below:
 
+![AWS-VPC](https://github.com/mohanedmoh/DevOps-Mentorship-program/blob/main/Images/Task1-AWS-%20VPC.png)
 
