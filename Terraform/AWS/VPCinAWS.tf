@@ -44,7 +44,7 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 resource "aws_nat_gateway" "natgw1" {
-  subnet_id     = aws_subnet.private1.id
+  subnet_id     = aws_subnet.public1.id
   allocation_id = aws_eip.eip1.id
   tags = {
     Name = "natgw1"
@@ -55,7 +55,7 @@ resource "aws_nat_gateway" "natgw1" {
   depends_on = [aws_internet_gateway.igw]
 }
 resource "aws_nat_gateway" "natgw2" {
-  subnet_id     = aws_subnet.private2.id
+  subnet_id     = aws_subnet.public2.id
   allocation_id = aws_eip.eip2.id
   tags = {
     Name = "natgw2"
@@ -78,7 +78,7 @@ resource "aws_route_table" "private1" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.natgw1.id
+    gateway_id = aws_nat_gateway.natgw1.id
   }
 
   tags = {
@@ -90,7 +90,7 @@ resource "aws_route_table" "private2" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.natgw2.id
+    gateway_id = aws_nat_gateway.natgw2.id
   }
 
   tags = {
