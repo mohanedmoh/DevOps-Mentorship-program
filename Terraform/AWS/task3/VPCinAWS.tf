@@ -1,12 +1,6 @@
 locals {
   public_cidr = ["10.0.1.0/24","10.0.2.0/24"]
   private_cidr = ["10.0.3.0/24","10.0.4.0/24"]
-  num_of_private_RT = 2
-  num_of_eip = 2
-  num_of_natg = 2
-  num_of_publicA = 2
-  num_of_privateA = 2
-  num_of_igw = 1
 }
 
 resource "aws_vpc" "main" {
@@ -41,7 +35,7 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 resource "aws_nat_gateway" "natgw" {
-  count = local.num_of_natg
+  count = 2
 
   subnet_id     = aws_subnet.public[count.index].id
   allocation_id = aws_eip.eip[count.index].id
@@ -66,7 +60,7 @@ resource "aws_route_table" "public1" {
   }
 }
 resource "aws_route_table" "private" {
-  count = local.num_of_private_RT
+  count = 2
   vpc_id = aws_vpc.main.id
   route {
     cidr_block = "0.0.0.0/0"
@@ -78,7 +72,7 @@ resource "aws_route_table" "private" {
   }
 }
 resource "aws_eip" "eip" {
-  count = local.num_of_eip
+  count = 2
   vpc = true
 
   tags = {
@@ -86,13 +80,13 @@ resource "aws_eip" "eip" {
   }
 }
 resource "aws_route_table_association" "public_association" {
-  count = local.num_of_publicA
+  count = 2
 
   subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public1.id
 }
 resource "aws_route_table_association" "private_association" {
-  count = local.num_of_privateA
+  count = 2
 
   subnet_id      = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private[count.index].id
