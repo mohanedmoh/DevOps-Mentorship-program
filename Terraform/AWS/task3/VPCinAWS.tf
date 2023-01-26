@@ -35,7 +35,7 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 resource "aws_nat_gateway" "natgw" {
-  count = 2
+  count = length(local.public_cidr)
 
   subnet_id     = aws_subnet.public[count.index].id
   allocation_id = aws_eip.eip[count.index].id
