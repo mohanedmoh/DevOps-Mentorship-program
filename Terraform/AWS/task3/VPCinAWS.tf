@@ -60,7 +60,7 @@ resource "aws_route_table" "public1" {
   }
 }
 resource "aws_route_table" "private" {
-  count = 2
+  count = length(local.private_cidr)
   vpc_id = aws_vpc.main.id
   route {
     cidr_block = "0.0.0.0/0"
@@ -72,7 +72,7 @@ resource "aws_route_table" "private" {
   }
 }
 resource "aws_eip" "eip" {
-  count = 2
+  count = length(local.public_cidr)
   vpc = true
 
   tags = {
@@ -80,13 +80,13 @@ resource "aws_eip" "eip" {
   }
 }
 resource "aws_route_table_association" "public_association" {
-  count = 2
+  count = length(local.public_cidr)
 
   subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public1.id
 }
 resource "aws_route_table_association" "private_association" {
-  count = 2
+  count = length(local.private_cidr)
 
   subnet_id      = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private[count.index].id
