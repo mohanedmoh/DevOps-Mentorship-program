@@ -3,14 +3,9 @@ resource "aws_instance" "public" {
   instance_type = "t3.micro"
   subnet_id     = aws_subnet.private[0].id
   associate_public_ip_address = true
-<<<<<<< HEAD
-  availability_zone = data.aws_availability_zones.available.names[0]
-  key_name = "ssh key"
-=======
   availability_zone           = data.aws_availability_zones.available.names[0]
   key_name                    = "ssh key"
   security_groups             = aws_security_group.allow_ssh_public.id
->>>>>>> fb1b72a (assign the security group and add new line at the end)
   tags = {
     Name = "${var.env_code}-public"
   }
@@ -20,12 +15,8 @@ resource "aws_instance" "private" {
   instance_type = "t3.micro"
   subnet_id     = aws_subnet.private[0].id
   availability_zone = data.aws_availability_zones.available.names[0]
-<<<<<<< HEAD
-  key_name = "ssh key"
-=======
   key_name          = "ssh key"
   security_groups   = aws_security_group.allow_ssh_private.id
->>>>>>> fb1b72a (assign the security group and add new line at the end)
   tags = {
     Name = "${var.env_code}-private"
   }
