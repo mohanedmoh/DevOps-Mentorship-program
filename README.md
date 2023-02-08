@@ -19,15 +19,16 @@
 * Task3 : Improve the VPC terraform code with (resource naming (Local, Global), Variable, Count variable to reduce repeating code) 
 * Task4 : learn more about git commands, and how to solve conflict. bellow is the list of commands we discussed:
 
-                      * One: git rebase -i HEAD~7 - interactive rebase of last 7 commits
+                * One: git rebase -i HEAD~7 - interactive rebase of last 7 commits then do git push --force
 
-                                interactive rebase options:
-                                1. p, pick <commit> = use commit
-                                2. r, reword <commit> = use commit, but edit the commit message
-                                3. e, edit <commit> = use commit, but stop for amending
-                                4. s, squash <commit> = use commit, but meld into previous commit
-                                5. d, drop <commit> = remove commit
+                          interactive rebase options:
+                          1. p, pick <commit> = use commit
+                          2. r, reword <commit> = use commit, but edit the commit message
+                          3. e, edit <commit> = use commit, but stop for amending
+                          4. s, squash <commit> = use commit, but meld into previous commit
+                          5. d, drop <commit> = remove commit
 
-                      * Two: git commit --amend - instead of adding additional commit, amend the prvious one
+                * Two: git commit --amend - instead of adding additional commit, amend the prvious one
 
-                      * Three: git rebase main - rebase your main branch, useful when you need to solve merge conflicts
+                * Three: git rebase main - rebase your main branch, useful when you need to solve merge conflicts
+* Task5 : Create two EC2 instance using Terraform and improve the code by using data.tf to get the availablity zones and AMI, and output.tf to export the instance public IP after creation
