@@ -6,7 +6,7 @@ resource "aws_instance" "public" {
   availability_zone           = data.aws_availability_zones.available.names[0]
   key_name                    = "mentor key"
   security_groups             = [aws_security_group.allow_ssh_public.id]
-  user_data                   = "${file("userdata.sh")}"
+  user_data                   = file("userdata.sh")
   tags = {
     Name = "${var.env_code}-public"
   }
