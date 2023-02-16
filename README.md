@@ -32,3 +32,4 @@
 
                 * Three: git rebase main - rebase your main branch, useful when you need to solve merge conflicts
 * Task5 : Create two EC2 instance using Terraform and improve the code by using data.tf to get the availablity zones and AMI, and output.tf to export the instance public IP after creation
+* Task6 : use userdata to install apache2, clone 2048 game from github and open port 80 to access the game from browser (http)
