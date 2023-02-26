@@ -5,21 +5,21 @@ resource "aws_vpc" "main" {
   }
 }
 resource "aws_subnet" "public" {
-  count = length(var.public_cidr)
+  count      = length(var.public_cidr)
   vpc_id     = aws_vpc.main.id
   cidr_block = var.public_cidr[count.index]
 
   tags = {
-    Name = "${var.env_code}-public-${(count.index)+1}"
+    Name = "${var.env_code}-public-${(count.index) + 1}"
   }
 }
 resource "aws_subnet" "private" {
-  count = length(var.private_cidr)
+  count      = length(var.private_cidr)
   vpc_id     = aws_vpc.main.id
   cidr_block = var.private_cidr[count.index]
 
   tags = {
-    Name = "${var.env_code}-private-${(count.index)+1}"
+    Name = "${var.env_code}-private-${(count.index) + 1}"
   }
 }
 resource "aws_internet_gateway" "igw" {
@@ -35,7 +35,7 @@ resource "aws_nat_gateway" "natgw" {
   subnet_id     = aws_subnet.public[count.index].id
   allocation_id = aws_eip.eip[count.index].id
   tags = {
-    Name = "${var.env_code}-natgw-${(count.index)+1}"
+    Name = "${var.env_code}-natgw-${(count.index) + 1}"
   }
 
   # To ensure proper ordering, it is recommended to add an explicit dependency
@@ -55,7 +55,7 @@ resource "aws_route_table" "public1" {
   }
 }
 resource "aws_route_table" "private" {
-  count = length(var.private_cidr)
+  count  = length(var.private_cidr)
   vpc_id = aws_vpc.main.id
   route {
     cidr_block = "0.0.0.0/0"
@@ -63,15 +63,15 @@ resource "aws_route_table" "private" {
   }
 
   tags = {
-    Name = "${var.env_code}-private RT-${(count.index)+1}"
+    Name = "${var.env_code}-private RT-${(count.index) + 1}"
   }
 }
 resource "aws_eip" "eip" {
   count = length(var.public_cidr)
-  vpc = true
+  vpc   = true
 
   tags = {
-    Name = "${var.env_code}-eip-${(count.index)+1}"
+    Name = "${var.env_code}-eip-${(count.index) + 1}"
   }
 }
 resource "aws_route_table_association" "public_association" {
