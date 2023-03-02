@@ -11,6 +11,8 @@ resource "aws_instance" "public" {
   }
 }
 resource "aws_instance" "private" {
+  count = 2
+
   ami               = data.aws_ami.ubuntu.id
   instance_type     = "t1.micro"
   subnet_id         = data.terraform_remote_state.level1.outputs.private_subnet[0]
