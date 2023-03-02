@@ -1,12 +1,11 @@
 resource "aws_instance" "public" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t1.micro"
-  subnet_id                   = data.terraform_remote_state.level1.outputs.public_subnet
+  subnet_id                   = data.terraform_remote_state.level1.outputs.public_subnet[0]
   associate_public_ip_address = true
   availability_zone           = data.aws_availability_zones.available.names[0]
-  key_name                    = "mentor key"
+  key_name                    = "public_ssh"
   security_groups             = [aws_security_group.allow_ssh_public.id]
-  user_data                   = file("userdata.sh")
   tags = {
     Name = "${var.env_code}-public"
   }
@@ -14,10 +13,12 @@ resource "aws_instance" "public" {
 resource "aws_instance" "private" {
   ami               = data.aws_ami.ubuntu.id
   instance_type     = "t1.micro"
-  subnet_id         = data.terraform_remote_state.level1.outputs.private_subnet
+  subnet_id         = data.terraform_remote_state.level1.outputs.private_subnet[0]
   availability_zone = data.aws_availability_zones.available.names[0]
-  key_name          = "mentor key"
+  key_name          = "public_ssh"
   security_groups   = [aws_security_group.allow_ssh_private.id]
+  user_data         = file("userdata.sh")
+
   tags = {
     Name = "${var.env_code}-private"
   }
@@ -64,6 +65,14 @@ resource "aws_security_group" "allow_ssh_private" {
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = [data.terraform_remote_state.level1.outputs.vpc_cidr]
+  }
+
+  ingress {
+    description     = "http from lb"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.lb_allow_http_public.id]
   }
 
   egress {
