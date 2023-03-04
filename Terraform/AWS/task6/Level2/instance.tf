@@ -1,3 +1,7 @@
+resource "aws_iam_instance_profile" "publice_profile" {
+  name = var.env_code
+  role = aws_iam_role.S3_role.name
+}
 resource "aws_instance" "public" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t1.micro"
@@ -6,6 +10,7 @@ resource "aws_instance" "public" {
   availability_zone           = data.aws_availability_zones.available.names[0]
   key_name                    = "public_ssh"
   security_groups             = [aws_security_group.allow_ssh_public.id]
+ iam_instance_profile = aws_iam_instance_profile.publice_profile.id
   tags = {
     Name = "${var.env_code}-public"
   }
