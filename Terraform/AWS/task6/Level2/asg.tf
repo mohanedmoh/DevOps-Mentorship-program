@@ -1,9 +1,8 @@
 
 resource "aws_launch_configuration" "main" {
   name_prefix     = var.env_code
-  image_id        = data.aws_ami.ubuntu.id
+  image_id        = data.aws_ami.amazonlinux.id
   instance_type   = "t1.micro"
-  key_name        = "public_ssh"
   security_groups = [aws_security_group.allow_ssh_private.id]
   user_data       = file("userdata.sh")
 
