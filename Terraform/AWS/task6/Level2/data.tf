@@ -1,17 +1,22 @@
-data "aws_ami" "ubuntu" {
+data "aws_ami" "amazonlinux" {
   most_recent = true
+
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+    values = ["amzn2-ami-kernel-5.10-hvm-2.0.20230119.1-x86_64-gp2"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
   }
 
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
   }
-
-  owners = ["099720109477"] # Canonical
+  owners = ["137112412989"]
 }
 data "aws_availability_zones" "available" {
   state = "available"
