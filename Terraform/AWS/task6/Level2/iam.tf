@@ -20,3 +20,7 @@ resource "aws_iam_role" "S3_role" {
     tag-key = "tag-value"
   }
 }
+resource "aws_iam_instance_profile" "main" {
+  name = var.env_code
+  role = aws_iam_role.S3_role.name
+}

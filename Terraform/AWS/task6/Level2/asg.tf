@@ -1,10 +1,11 @@
 
 resource "aws_launch_configuration" "main" {
-  name_prefix     = var.env_code
-  image_id        = data.aws_ami.amazonlinux.id
-  instance_type   = "t1.micro"
-  security_groups = [aws_security_group.allow_ssh_private.id]
-  user_data       = file("userdata.sh")
+  name_prefix          = var.env_code
+  image_id             = data.aws_ami.amazonlinux.id
+  instance_type        = "t1.micro"
+  security_groups      = [aws_security_group.allow_ssh_private.id]
+  user_data            = file("userdata.sh")
+  iam_instance_profile = aws_iam_instance_profile.main.name
 
 }
 resource "aws_autoscaling_group" "main" {
