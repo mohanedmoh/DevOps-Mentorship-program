@@ -1,3 +1,3 @@
 output "lb_arn" {
-  value = aws_lb.main.arn
+  value = module.lb.lb_arn
 }

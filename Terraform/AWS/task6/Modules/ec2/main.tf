@@ -1,4 +1,4 @@
-resource "aws_security_group" "allow_ssh_private" {
+sresource "aws_security_group" "allow_ssh_private" {
   name        = "allow_ssh"
   description = "Allow SSH inbound traffic"
   vpc_id      = data.terraform_remote_state.level1.outputs.vpc_id

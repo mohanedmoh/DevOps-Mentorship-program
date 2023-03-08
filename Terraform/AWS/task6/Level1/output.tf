@@ -1,13 +1,13 @@
 output "vpc_id" {
-  value = aws_vpc.main.id
+  value = module.vpc.vpc_id
 }
 output "public_subnet" {
-  value = aws_subnet.public[*].id
+  value = module.vpc.public_subnet
 }
 output "private_subnet" {
-  value = aws_subnet.private[*].id
+  value = module.vpc.private_subnet
 }
 
 output "vpc_cidr" {
-  value = var.vpc_cidr
+  value = module.vpc.vpc_cidr
 }
