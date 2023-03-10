@@ -1,7 +1,6 @@
-sudo apt update
-sudo apt -y install apache2
-cd /var/www/html/
-sudo git clone https://github.com/gabrielecirulli/2048
-sudo cp -R 2048/* ./
-sudo service apache2 restart
-
+sudo yum update -y
+sudo yum install -y httpd git
+sudo git clone https://github.com/gabrielecirulli/2048.git
+sudo cp -R 2048/* /var/www/html
+sudo systemctl enable httpd 
+sudo systemctl start httpd
