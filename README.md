@@ -43,4 +43,5 @@
 * Task14 : create modules for the main services.
 * Task15 : Register domain using Route53 service and add SSL encryption
 * Task16 : Create RDS MySQL database and use Amazon Secret Manager to store password
+* Task17 : Practice Terraform Functions
 
