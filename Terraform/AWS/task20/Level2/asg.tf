@@ -1,25 +1,52 @@
-module "private_sg" {
-  source = "terraform-aws-modules/security-group/aws"
-
-  name        = "${var.env_code}-private"
-  description = "allow port 80 and 3306 TCP inbound to ec2 ASG instances within VPC"
+resource "aws_security_group" "allow_ssh_private" {
+  name        = "allow_ssh"
+  description = "Allow SSH inbound traffic"
   vpc_id      = data.terraform_remote_state.level1.outputs.vpc_id
 
-  computed_ingress_with_source_security_group_id = [{
-    rule                     = "http-80-tcp"
-    source_security_group_id = module.external_sg.security_group_id
-  }]
-  number_of_computed_ingress_with_source_security_group_id = 1
+  ingress {
+    description     = "http from lb"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.lb_allow_http_public.id]
+  }
 
-  egress_with_cidr_blocks = [
-    {
-      from_port   = 0
-      to_port     = 65535
-      protocol    = "tcp"
-      description = "https to ELB"
-      cidr_block  = "0.0.0.0/0"
-    }
-  ]
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.env_code}-allow_ssh-from-VPC"
+  }
+}
+resource "aws_iam_role" "S3_role" {
+  name = var.env_code
+
+  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"]
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      },
+    ]
+  })
+
+  tags = {
+    tag-key = "tag-value"
+  }
+}
+resource "aws_iam_instance_profile" "main" {
+  name = var.env_code
+  role = aws_iam_role.S3_role.name
 }
 module "asg" {
   source = "terraform-aws-modules/autoscaling/aws"
@@ -41,12 +68,17 @@ module "asg" {
   launch_template_name        = var.env_code
   launch_template_description = "Launch template example"
   update_default_version      = true
+  iam_instance_profile_arn = aws_iam_instance_profile.main.arn
 
   image_id        = data.aws_ami.amazonlinux.id
   instance_type   = "t2.micro"
-  security_groups = [module.private_sg.security_group_id]
-  
-  user_data       = data.template_cloudinit_config.config.rendered #file("userdata.sh")
+  security_groups = [aws_security_group.allow_ssh_private.id]
+  user_data = base64encode(templatefile("${path.module}/userdata.sh", 
+      {
+        db_password = local.db_password
+      }
+    )
+  )
 
 
   tags = {
@@ -54,26 +86,6 @@ module "asg" {
   }
 }
 
-data "template_file" "client" {
-  template = file("userdata.sh")
-}
-data "template_cloudinit_config" "config" {
-  gzip          = false
-  base64_encode = false
-  #first part of local config file
-  part {
-    content_type = "text/x-shellscript"
-    content      = <<-EOF
-    #!/bin/bash
-    export password="${local.db_password}"
-    EOF
-  }
-  #second part
-  part {
-    content_type = "text/x-shellscript"
-    content      = data.template_file.client.rendered
-  }
-}
 
 
 # data "template_file" "init" {
@@ -84,3 +96,5 @@ data "template_cloudinit_config" "config" {
 #     #host     = "${module.rds.endpoint}"
 #   }
 # }
+
+

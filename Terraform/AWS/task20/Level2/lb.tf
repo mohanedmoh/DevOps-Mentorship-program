@@ -9,31 +9,29 @@ module "acm" {
   wait_for_validation = true
 }
 
-module "external_sg" {
-  source = "terraform-aws-modules/security-group/aws"
+resource "aws_security_group" "lb_allow_http_public" {
+  name        = "lb_allow_tls"
+  description = "Allow TLS inbound traffic"
+  vpc_id      = data.terraform_remote_state.level1.outputs.vpc_id
 
-  name   = "${var.env_code}-external"
-  vpc_id = data.terraform_remote_state.level1.outputs.vpc_id
+  ingress {
+    description = "http from my IP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-  ingress_with_cidr_blocks = [
-    {
-      from_port   = 443
-      to_port     = 443
-      protocol    = "tcp"
-      description = "https to ELB"
-      cidr_block  = "0.0.0.0/0"
-    }
-  ]
+  egress {
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-  egress_with_cidr_blocks = [
-    {
-      from_port   = 0
-      to_port     = 65535
-      protocol    = "tcp"
-      description = "any from ELB"
-      cidr_block  = "0.0.0.0/0"
-    }
-  ]
+  tags = {
+    Name = "${var.env_code}-allow_http-from-IP"
+  }
 }
 
 module "elb" {
@@ -46,7 +44,7 @@ module "elb" {
   vpc_id          = data.terraform_remote_state.level1.outputs.vpc_id
   internal        = false
   subnets         = data.terraform_remote_state.level1.outputs.public_subnet
-  security_groups = [module.external_sg.security_group_id]
+  security_groups = [aws_security_group.lb_allow_http_public.id]
 
   target_groups = [
     {
@@ -92,4 +90,5 @@ module "dns" {
   ]
 
 }
+
 
