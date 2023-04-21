@@ -45,4 +45,5 @@
 * Task16 : Create RDS MySQL database and use Amazon Secret Manager to store password
 * Task17 : Practice Terraform Functions
 * Task18 : Open Source Terraform modules
-
+* Task19 : Build EKS cluster using terraform and Helm 
+* Task20 : Final project to deploy WordPress application using AWS, Docker, EKS, Terraform, Helm, GitHub
