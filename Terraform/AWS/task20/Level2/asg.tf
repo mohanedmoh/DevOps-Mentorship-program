@@ -58,7 +58,7 @@ module "asg" {
   max_size                  = 1
   desired_capacity          = 1
   wait_for_capacity_timeout = 0
-  health_check_grace_period = 400
+  health_check_grace_period = 100
   health_check_type         = "EC2"
   vpc_zone_identifier       = data.terraform_remote_state.level1.outputs.private_subnet
   target_group_arns         = module.elb.target_group_arns
@@ -68,15 +68,16 @@ module "asg" {
   launch_template_name        = var.env_code
   launch_template_description = "Launch template example"
   update_default_version      = true
-  iam_instance_profile_arn = aws_iam_instance_profile.main.arn
+  iam_instance_profile_arn    = aws_iam_instance_profile.main.arn
 
   image_id        = data.aws_ami.amazonlinux.id
   instance_type   = "t2.micro"
   security_groups = [aws_security_group.allow_ssh_private.id]
-  user_data = base64encode(templatefile("${path.module}/userdata.sh", 
-      {
-        db_password = local.db_password
-      }
+  user_data = base64encode(templatefile("${path.module}/userdata.sh",
+    {
+      db_password = local.db_password,
+      host        = "${module.rds.db_instance_endpoint}"
+    }
     )
   )
 
@@ -85,16 +86,3 @@ module "asg" {
     Environment = var.env_code
   }
 }
-
-
-
-# data "template_file" "init" {
-#   template = "${file("userdata.sh")}"
-
-#   vars = {
-#     password = "${local.db_password}"
-#     #host     = "${module.rds.endpoint}"
-#   }
-# }
-
-
