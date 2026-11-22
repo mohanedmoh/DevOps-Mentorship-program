@@ -26,7 +26,9 @@ terraform init
 terraform apply
 ```
 
-With the VPC range `10.0.0.0/16` and eight new bits, the public ranges are `10.0.0.0/24`, `10.0.1.0/24` and `10.0.2.0/24`. The private ranges start at `10.0.100.0/24`. The `instance_type` output is `t3.micro`, because the environment is `dev`. `port` is `80`, because `tonumber("eighty")` fails and `try` falls back. `is_valid` is `false`.
+With the VPC range `10.0.0.0/16` and eight new bits, the public ranges are `10.0.0.0/24`, `10.0.1.0/24` and `10.0.2.0/24`. The private ranges start at `10.0.100.0/24`. The `instance_type` output is `t3.micro`, because the environment is `dev`. `port` is `80`, because `tonumber("eighty")` fails and `try` falls back.
+
+The `vpc_cidr` variable has a validation rule that uses `can`. Run `terraform plan -var vpc_cidr=10.0.0.0/33` and read the error. `can` turns the failure inside `cidrhost` into a plain `false`, and Terraform shows the message from the rule.
 
 For anything else, open `terraform console` and try each expression by hand.
 

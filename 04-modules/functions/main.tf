@@ -1,11 +1,9 @@
 # Nothing here talks to AWS. Run terraform apply and read the outputs, or
 # open terraform console and try each expression by hand.
 locals {
-  vpc_cidr = "10.0.0.0/16"
-
   # cidrsubnet(prefix, newbits, netnum) carves a smaller range out of a larger one.
-  public_cidrs  = [for i in range(3) : cidrsubnet(local.vpc_cidr, 8, i)]
-  private_cidrs = [for i in range(3) : cidrsubnet(local.vpc_cidr, 8, i + 100)]
+  public_cidrs  = [for i in range(3) : cidrsubnet(var.vpc_cidr, 8, i)]
+  private_cidrs = [for i in range(3) : cidrsubnet(var.vpc_cidr, 8, i + 100)]
 
   # lookup reads a map and falls back to a default. merge layers maps.
   instance_sizes = { dev = "t3.micro", prod = "t3.large" }
@@ -22,9 +20,10 @@ locals {
   groups    = { web = ["web-02", "web-01"], db = ["db-01"] }
   all_hosts = sort(flatten(values(local.groups)))
 
-  # try and can turn an error into a fallback instead of a failed run.
-  port     = try(tonumber("eighty"), 80)
-  is_valid = can(cidrhost("10.0.0.0/33", 0))
+  # try turns an error into a fallback instead of a failed run. Its partner,
+  # can, turns an error into true or false and is meant for variable validation
+  # rules. See variables.tf.
+  port = try(tonumber("eighty"), 80)
 }
 
 output "public_cidrs" {
@@ -53,8 +52,4 @@ output "all_hosts" {
 
 output "port" {
   value = local.port
-}
-
-output "is_valid" {
-  value = local.is_valid
 }
