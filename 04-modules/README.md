@@ -34,7 +34,7 @@ For anything else, open `terraform console` and try each expression by hand.
 
 ## Pinning versions
 
-`~> 6.8` accepts 6.8 and any later 6.x release, and refuses 7.0. A major version can rename inputs and break your plan. Without a `version` line, Terraform takes the newest release at the time of `init`.
+`~> 6.8` accepts 6.8 and any later 6.x release, and refuses 7.0. Registry modules follow semantic versioning, so a new major version is the place for breaking changes such as renamed inputs. The Terraform documentation recommends a version constraint on every registry module for that reason. Modules from a local path, like `../modules/vpc`, do not take a `version`.
 
 ## Questions to talk through
 
