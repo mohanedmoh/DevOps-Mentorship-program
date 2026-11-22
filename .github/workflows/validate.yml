@@ -37,13 +37,13 @@ jobs:
         with:
           terraform_version: 1.16.6
       - name: Format
-        run: terraform fmt -check -diff -recursive
+        run: bash "$GITHUB_WORKSPACE/.github/scripts/annotate.sh" "fmt ${{ matrix.dir }}" terraform fmt -check -diff -recursive -no-color
         working-directory: ${{ matrix.dir }}
       - name: Init
-        run: terraform init -backend=false -input=false
+        run: bash "$GITHUB_WORKSPACE/.github/scripts/annotate.sh" "init ${{ matrix.dir }}" terraform init -backend=false -input=false -no-color
         working-directory: ${{ matrix.dir }}
       - name: Validate
-        run: terraform validate
+        run: bash "$GITHUB_WORKSPACE/.github/scripts/annotate.sh" "validate ${{ matrix.dir }}" terraform validate -no-color
         working-directory: ${{ matrix.dir }}
 
   helm:
@@ -56,7 +56,7 @@ jobs:
           found=0
           for chart in $(find . -name Chart.yaml -printf '%h\n'); do
             found=1
-            helm lint "$chart"
-            helm template release "$chart" > /dev/null
+            bash "$GITHUB_WORKSPACE/.github/scripts/annotate.sh" "helm lint $chart" helm lint "$chart"
+            bash "$GITHUB_WORKSPACE/.github/scripts/annotate.sh" "helm template $chart" helm template release "$chart"
           done
           echo "charts linted: $found"
