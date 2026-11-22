@@ -43,4 +43,4 @@ The load balancer and the NAT gateway bill while they exist. Destroy at the end 
 - Why do the servers sit in private subnets when the load balancer is public?
 - What does `health_check_type = "ELB"` do that `EC2` does not?
 - Why is IMDSv2 required in the launch template?
-- What would you need to add to serve HTTPS? The next folder does it.
+- What would you need to add to serve HTTPS? The `05-wordpress` folder does it.
