@@ -5,8 +5,8 @@ resource "aws_launch_template" "app" {
   user_data              = filebase64("${path.module}/userdata.sh")
   update_default_version = true
 
-  # Resolved when an instance launches, so new servers always get the
-  # current Amazon Linux 2023 image.
+  # The image comes from a public Systems Manager parameter. Auto Scaling
+  # looks it up each time the group is created or updated.
   image_id = "resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
 
   iam_instance_profile {
