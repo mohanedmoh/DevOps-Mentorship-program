@@ -1,4 +1,25 @@
-.terraform.lock.hcl
-.terraform
-terraform.tfstate
-terraform.tfstate.backup
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfplan
+tfplan
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Files that hold real values. Commit the .example copies only.
+*.tfvars
+*.tfvars.json
+backend.hcl
+
+# Helm
+charts/*/charts/*.tgz
+
+# Editors and systems
+.DS_Store
+.idea/
+.vscode/

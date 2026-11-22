@@ -1,0 +1,62 @@
+name: validate
+
+on:
+  push:
+    branches: [main, upgrade]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  roots:
+    name: find roots
+    runs-on: ubuntu-latest
+    outputs:
+      dirs: ${{ steps.find.outputs.dirs }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: find
+        run: |
+          dirs=$(find . -name versions.tf -not -path '*/.terraform/*' -not -path '*/modules/*' -printf '%h\n' | sed 's|^\./||' | sort | jq -R . | jq -sc .)
+          echo "dirs=$dirs" >> "$GITHUB_OUTPUT"
+          echo "$dirs"
+
+  terraform:
+    name: terraform ${{ matrix.dir }}
+    needs: roots
+    if: needs.roots.outputs.dirs != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dir: ${{ fromJSON(needs.roots.outputs.dirs) }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: 1.16.6
+      - name: Format
+        run: terraform fmt -check -diff -recursive
+        working-directory: ${{ matrix.dir }}
+      - name: Init
+        run: terraform init -backend=false -input=false
+        working-directory: ${{ matrix.dir }}
+      - name: Validate
+        run: terraform validate
+        working-directory: ${{ matrix.dir }}
+
+  helm:
+    name: helm lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Lint every chart
+        run: |
+          found=0
+          for chart in $(find . -name Chart.yaml -printf '%h\n'); do
+            found=1
+            helm lint "$chart"
+            helm template release "$chart" > /dev/null
+          done
+          echo "charts linted: $found"
