@@ -1,0 +1,68 @@
+# A teaching fixture. It is not valid for apply and the CI does not parse it.
+# Every block below holds a pattern that scan.sh looks for.
+
+terraform {
+  backend "s3" {
+    bucket         = "example-state"
+    key            = "app.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform_lock"
+  }
+}
+
+data "aws_ami" "web" {
+  most_recent = true
+  owners      = ["137112412989"]
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-kernel-5.10-hvm-*-x86_64-gp2"]
+  }
+}
+
+data "aws_ami" "legacy" {
+  most_recent = true
+  owners      = ["099720109477"]
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+  }
+}
+
+resource "aws_eip" "nat" {
+  vpc = true
+}
+
+resource "aws_security_group_rule" "ssh" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = ["198.51.100.7/32"]
+  security_group_id = "sg-0123456789abcdef0"
+}
+
+resource "aws_instance" "web" {
+  ami           = data.aws_ami.web.id
+  instance_type = "t1.micro"
+}
+
+resource "aws_iam_role" "ssm" {
+  name                = "ssm"
+  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"]
+  assume_role_policy  = "{}"
+}
+
+resource "aws_db_instance" "main" {
+  engine         = "mysql"
+  engine_version = "5.7"
+  instance_class = "db.t3.micro"
+  username       = "admin"
+  password       = "changeme123"
+}
+
+module "vpc" {
+  source = "terraform-aws-modules/vpc/aws"
+  name   = "demo"
+}

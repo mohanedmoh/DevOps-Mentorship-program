@@ -1,0 +1,6 @@
+apiVersion: v2
+name: webapp
+description: A small web application with a Deployment and a Service.
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

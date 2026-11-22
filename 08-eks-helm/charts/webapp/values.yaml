@@ -1,0 +1,20 @@
+replicaCount: 2
+
+image:
+  repository: nginxinc/nginx-unprivileged
+  # A moving tag keeps the exercise short. Pin a full version for real use.
+  tag: stable-alpine
+  pullPolicy: IfNotPresent
+
+containerPort: 8080
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    memory: 128Mi

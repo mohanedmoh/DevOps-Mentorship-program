@@ -1,0 +1,7 @@
+The release {{ .Release.Name }} is installed.
+
+Reach it from your machine:
+
+  kubectl port-forward service/{{ include "webapp.fullname" . }} 8080:{{ .Values.service.port }}
+
+Then open http://localhost:8080
