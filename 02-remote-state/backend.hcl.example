@@ -1,0 +1,4 @@
+# Copy to backend.hcl and fill in the bucket created by the bootstrap layer.
+# Each layer passes it with: terraform init -backend-config=../backend.hcl
+bucket = "mentor-tfstate-123456789012"
+region = "eu-west-2"
