@@ -7,6 +7,11 @@ variable "cidr" {
   type        = string
   description = "CIDR block of the VPC."
   default     = "10.0.0.0/16"
+
+  validation {
+    condition     = can(cidrnetmask(var.cidr))
+    error_message = "cidr must be a valid IPv4 CIDR block, for example 10.0.0.0/16."
+  }
 }
 
 variable "az_count" {
