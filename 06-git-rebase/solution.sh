@@ -29,8 +29,9 @@ else
   GIT_EDITOR=true git rebase --continue > /dev/null
 fi
 
-# Four: the history changed, so a plain push is refused. Push with a lease.
-git push -q --force-with-lease origin feature/greeting
+# Four: the history changed, so a plain push is refused. Push with a lease,
+# and ask Git to check that nothing fetched in the background was missed.
+git push -q --force-with-lease --force-if-includes origin feature/greeting
 
 echo "Done. The branch now reads:"
 git log --oneline --graph origin/main feature/greeting

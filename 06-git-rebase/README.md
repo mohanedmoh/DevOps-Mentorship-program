@@ -59,14 +59,23 @@ If it goes wrong, `git rebase --abort` puts everything back.
 You changed history, so a normal push is refused. Do not reach for `--force`.
 
 ```bash
-git push --force-with-lease origin feature/greeting
+git push --force-with-lease --force-if-includes origin feature/greeting
 ```
 
-`--force-with-lease` only overwrites the remote branch if it is still where you last saw it. If a colleague pushed in the meantime, the push fails and their work is safe. Plain `--force` skips that check.
+`--force-with-lease` only overwrites the remote branch if it is still where your remote-tracking branch says it is. If a colleague pushed after your last fetch, the push fails and their work is safe. Plain `--force` skips that check.
+
+The lease has a gap. Every `git fetch` moves your remote-tracking branch, including a fetch that your editor or a scheduled job runs in the background. If a colleague pushed before that fetch, the lease still passes and their commit is lost. `--force-if-includes` closes the gap. It refuses the push when the remote-tracking branch holds commits that your local branch has not taken in.
 
 ## Check your work
 
 `./solution.sh my-solution` runs the whole exercise with no editor. Compare its `git log` with yours.
+
+## Questions to talk through
+
+- Why does a rebase give every replayed commit a new ID, even the ones you did not change?
+- When is `squash` better than `fixup`?
+- Why does Git refuse a plain push after a rebase?
+- What does `--force-with-lease` protect against, and what can still get past it?
 
 ## Rules of thumb
 
