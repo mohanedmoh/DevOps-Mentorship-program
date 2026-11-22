@@ -60,3 +60,25 @@ jobs:
             bash "$GITHUB_WORKSPACE/.github/scripts/annotate.sh" "helm template $chart" helm template release "$chart"
           done
           echo "charts linted: $found"
+
+  git-practice:
+    name: git practice
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Run the exercise end to end
+        run: |
+          cd 06-git-rebase
+          bash solution.sh "$RUNNER_TEMP/git-solution"
+
+  audit:
+    name: audit scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: The course code has no findings
+        run: bash 07-audit/scan.sh .
+      - name: The teaching fixture still has ten
+        run: |
+          set +e
+          bash 07-audit/scan.sh 07-audit/examples | tail -1 | grep -x "10 findings."

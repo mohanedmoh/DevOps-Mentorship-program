@@ -31,7 +31,7 @@ Find an instance ID in the EC2 console or with `aws autoscaling describe-auto-sc
 ## Things worth trying
 
 - Terminate one instance and watch the group replace it.
-- Change `userdata.sh` and run `terraform apply`. The group rolls the servers one at a time.
+- Change `userdata.sh` and run `terraform apply`. The group replaces the servers in a rolling refresh and keeps at least half of them healthy.
 - Set `health_check_type` back to `EC2` and break the web server. What changes?
 
 ## Cost

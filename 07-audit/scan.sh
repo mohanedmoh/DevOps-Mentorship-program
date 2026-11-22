@@ -43,15 +43,17 @@ check() {
 }
 
 check '^[[:space:]]*vpc[[:space:]]*=[[:space:]]*true' \
-  'aws_eip: vpc = true has been replaced by domain = "vpc".'
+  'aws_eip: use domain = "vpc". The vpc argument is no longer documented.'
 check 'dynamodb_table' \
   'S3 backend: DynamoDB locking is deprecated. Use use_lockfile = true.'
 check 'amzn2|amazon linux 2([^0-9]|$)' \
   'Amazon Linux 2 reached end of support on 30 June 2026. Use Amazon Linux 2023.'
 check 'ubuntu-focal|20\.04' \
-  'Ubuntu 20.04 standard support ended on 31 May 2025. Use a current LTS release.'
+  'Ubuntu 20.04 standard support ended in May 2025. Use a current LTS release.'
 check 'engine_version[[:space:]]*=[[:space:]]*"5\.7' \
   'RDS for MySQL 5.7 is in Extended Support, which costs extra and ends on 30 June 2029. Use 8.4.'
+check 'engine_version[[:space:]]*=[[:space:]]*"8\.0' \
+  'RDS for MySQL 8.0 left standard support on 31 July 2026 and is now in paid Extended Support. Use 8.4.'
 check '"t1\.micro"' \
   't1.micro is a previous generation type. Use a current type such as t3.micro.'
 check 'AmazonEC2RoleforSSM' \
