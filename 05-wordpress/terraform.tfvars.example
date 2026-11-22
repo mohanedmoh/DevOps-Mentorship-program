@@ -1,0 +1,4 @@
+# Copy to terraform.tfvars and edit. Real tfvars files are ignored by git.
+state_bucket  = "mentor-tfstate-123456789012"
+zone_name     = "example.com"
+site_hostname = "blog.example.com"

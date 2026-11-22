@@ -1,0 +1,37 @@
+#!/bin/bash
+set -euo pipefail
+
+dnf install -y docker jq
+systemctl enable --now docker
+
+# Read the database password from Secrets Manager. The instance role
+# allows this one secret and nothing else.
+SECRET=$(aws secretsmanager get-secret-value \
+  --region ${region} \
+  --secret-id ${secret_arn} \
+  --query SecretString \
+  --output text)
+DB_PASSWORD=$(echo "$SECRET" | jq -r .password)
+
+# Keep the password in a file only root can read, not on the command line.
+umask 077
+cat > /root/wordpress.env <<ENV
+WORDPRESS_DB_HOST=${db_host}
+WORDPRESS_DB_USER=${db_user}
+WORDPRESS_DB_NAME=${db_name}
+WORDPRESS_DB_PASSWORD=$DB_PASSWORD
+ENV
+
+# Behind the load balancer WordPress sees plain HTTP. Tell it to trust the
+# forwarded protocol so it builds https links.
+cat > /root/wordpress-extra.php <<'PHP'
+if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') { $_SERVER['HTTPS'] = 'on'; }
+PHP
+
+docker run -d \
+  --name wordpress \
+  --restart unless-stopped \
+  -p 80:80 \
+  --env-file /root/wordpress.env \
+  -e WORDPRESS_CONFIG_EXTRA="$(cat /root/wordpress-extra.php)" \
+  ${wordpress_image}
