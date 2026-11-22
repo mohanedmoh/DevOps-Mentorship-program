@@ -13,6 +13,12 @@ WordPress in a Docker container on EC2, with its database on RDS and HTTPS on a 
 
 The database password never appears in the code, in a variable or in the state file. The database uses `manage_master_user_password = true`, so RDS creates the password and stores it in Secrets Manager. At boot the server reads that one secret with its instance role and hands it to the container through a file only root can read.
 
+RDS rotates that secret every seven days by default, and the boot script reads it once. A server that started before a rotation holds the old value, so replace the server to pick up the new one.
+
+## HTTPS behind the load balancer
+
+The load balancer ends the HTTPS connection and talks plain HTTP to the server. It adds an `X-Forwarded-Proto` header that says which protocol the visitor used. The official image reads that header in its `wp-config.php`, so WordPress builds `https` links with no extra setting.
+
 ## You need
 
 - The network layer from `02-remote-state`.

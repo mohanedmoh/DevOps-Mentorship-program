@@ -46,5 +46,5 @@ variable "db_instance_class" {
 variable "wordpress_image" {
   type        = string
   description = "WordPress container image. Pin a full version for anything beyond practice."
-  default     = "wordpress:6-apache"
+  default     = "wordpress:7-apache"
 }

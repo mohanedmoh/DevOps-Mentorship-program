@@ -22,16 +22,12 @@ WORDPRESS_DB_NAME=${db_name}
 WORDPRESS_DB_PASSWORD=$DB_PASSWORD
 ENV
 
-# Behind the load balancer WordPress sees plain HTTP. Tell it to trust the
-# forwarded protocol so it builds https links.
-cat > /root/wordpress-extra.php <<'PHP'
-if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') { $_SERVER['HTTPS'] = 'on'; }
-PHP
-
+# Behind the load balancer WordPress sees plain HTTP. The official image
+# already reads the X-Forwarded-Proto header that the load balancer adds,
+# so WordPress builds https links without extra configuration.
 docker run -d \
   --name wordpress \
   --restart unless-stopped \
   -p 80:80 \
   --env-file /root/wordpress.env \
-  -e WORDPRESS_CONFIG_EXTRA="$(cat /root/wordpress-extra.php)" \
   ${wordpress_image}
